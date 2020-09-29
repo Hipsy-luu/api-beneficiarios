@@ -1,3 +1,3 @@
-BDDName : ux_proyect
-User : ux_user
-Pass : Auoflo9Pm5z97V2U
+username: 'beneficiarios_user',
+password: '9AYRfGMo7HX2eN1e',
+database: 'beneficiarios_bd',

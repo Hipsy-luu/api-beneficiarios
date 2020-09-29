@@ -22,11 +22,11 @@ export class AuthService {
       !loginAttempt.password ||
       !loginAttempt.email
     ) {
-      return new ServerMessages(true, 'Peticion incompleta', {});
+      return new ServerMessages(true, 'Petición incompleta', {});
     } else if (loginAttempt.password.length < 8) {
       return new ServerMessages(
         true,
-        'La contraseña debe contener almenos 8 caracteres.',
+        'La contraseña debe contener al menos 8 caracteres.',
         {},
       );
     } else if ( !re.test(String(loginAttempt.email).toLowerCase()) ) {
@@ -38,21 +38,22 @@ export class AuthService {
     }
     // This will be used for the initial login whit email
     let userToAttempt: User = await this.userRepository.findOne<User>({
-      where: { email: loginAttempt.email },
+      /* attributes: { exclude: ['password','deleted'] }, */
+      where: { email: loginAttempt.email , deleted : false },
     });
 
     return new Promise(async (resolve, reject) => {
       let response: any;
       if (userToAttempt == null) {
         resolve(
-          new ServerMessages(true, 'Usuario y/ó contraseña invalidos', {}),
+          new ServerMessages(true, 'Usuario y/ó contraseña inválidos', {}),
         );
       } else {
-        // Check the supplied password against the hash stored for this username
+        // Check the supplied password against the hash stored for this email
         let checPass = await userToAttempt.validPassword(loginAttempt.password);
         if (checPass) {
           // If there is a successful match, generate a JWT for the user
-          response = this.createJwtPayload(userToAttempt.username);
+          response = this.createJwtPayload(userToAttempt.email);
           response.user = userToAttempt;
 
           resolve(new ServerMessages(false, 'Inicio Exitoso', response));
@@ -60,7 +61,7 @@ export class AuthService {
           resolve(
             new ServerMessages(
               true,
-              'Usuario y/ó contraseña invalidos',
+              'Usuario y/ó contraseña inválidos',
               new UnauthorizedException(),
             ),
           );
@@ -73,7 +74,7 @@ export class AuthService {
   async validateUserByJwt(payload: JwtPayload) {
     // This will be used when the user has already logged in and has a JWT
     let user: any;
-    user = await this.usersService.findOneByUsername(payload.usuario);
+    user = await this.usersService.findOneByEmail(payload.email);
 
     if (user) {
       // If there is a successful match, generate a JWT for the user
@@ -85,9 +86,9 @@ export class AuthService {
     }
   }
 
-  createJwtPayload(usuario) {
+  createJwtPayload(email) {
     let data: JwtPayload = {
-      usuario: usuario,
+      email: email,
     };
     let jwt = this.jwtService.sign(data);
     return {

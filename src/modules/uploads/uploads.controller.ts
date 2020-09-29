@@ -5,6 +5,7 @@ import * as multer from 'multer';
 import * as fs from 'fs';
 import { ServerMessages } from '../../utils/serverMessages.util';
 import { AuthGuard } from '@nestjs/passport';
+import { UploadsService } from './uploads.service';
 
 var usersPath = './storage/users/';
 var bandsPath = './storage/bands/';
@@ -35,41 +36,6 @@ var storageUsers = multer.diskStorage({
     },
     filename: function (req, file, cb) {
         cb(null, file.originalname );
-        
-    }
-});
-
-var storageBands = multer.diskStorage({
-    destination: function (req, file, cb) {
-        //console.log({stringActual : dirCompany , stringdirectorio : dir});
-        if (!fs.existsSync('./storage/') ){
-            fs.mkdirSync('./storage/');
-        }
-        if (!fs.existsSync(bandsPath) ){
-            fs.mkdirSync(bandsPath);
-        }
-        cb(null, bandsPath)
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname );
-        
-    }
-});
-
-var storageSets = multer.diskStorage({
-    destination: function (req, file, cb) {
-        //console.log({stringActual : dirCompany , stringdirectorio : dir});
-        if (!fs.existsSync('./storage/') ){
-            fs.mkdirSync('./storage/');
-        }
-        if (!fs.existsSync(setsPath) ){
-            fs.mkdirSync(setsPath);
-        }
-        cb(null, setsPath)
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname );
-        
     }
 });
 
@@ -98,7 +64,7 @@ var storageSongs = multer.diskStorage({
 
 @Controller('uploads')
 export class UploadsController {
-    constructor(){}
+    constructor(private uploadsService : UploadsService){}
     //////////////////////////////////////USUARIOS/////////////////////////////////////////////////
     //Crea y guarda la imagen del usuario y su directorio
     @Post('user-image/')
@@ -108,12 +74,12 @@ export class UploadsController {
         storage: storageUsers
     }))
     async userImageFileUpload(@UploadedFiles() images): Promise<any> {
-        return new ServerMessages(false,"Imagen del usuario " + images[0].originalname + " subida.",{});
+        return await this.uploadsService.setUserHaveImage(images[0].originalname);
     }
 
     //URL que proporciona las imagenes de los usuarios 
     @Get('user-image/:idUser')
-    @UseGuards(AuthGuard())
+    /* @UseGuards(AuthGuard()) */
     async serveUserImage(@Param('idUser') idUser : String, @Res() res): Promise<any> {
         try {
             res.sendFile( idUser+'.jpg' , { root: 'storage/users/'}, 
@@ -133,132 +99,7 @@ export class UploadsController {
     //Elimina la imagen de un usuario
     @Get('user-delete-image/:idUser')
     @UseGuards(AuthGuard())
-    async deleteUserImage(@Param('idUser') idUser : String): Promise<any> {
-        return await this.deleteFile('storage/users/'+idUser+'.jpg');
-    }
-
-    //////////////////////////////////////BANDAS/////////////////////////////////////////////////
-    //Crea y guarda la imagen de la BANDAS y su directorio
-    @Post('band-image/')
-    @UseGuards(AuthGuard())
-    @UseInterceptors(FilesInterceptor('files[]', 1, {
-        fileFilter: jpgFileFilter,
-        storage: storageBands
-    }))
-    async bandImageFileUpload(@UploadedFiles() images): Promise<any> {
-        return new ServerMessages(false,"Imagen de la banda " + images[0].originalname + " subida.",{});
-    }
-
-    //URL que proporciona las imagenes de las BANDAS 
-    @Get('band-image/:idBand')
-    @UseGuards(AuthGuard())
-    async serveBandImage(@Param('idBand') idBand : String, @Res() res): Promise<any> {
-        try {
-            res.sendFile( idBand+'.jpg' , { root: 'storage/bands/'}, 
-            (err) => {
-                if (err) {
-                    return new ServerMessages(true,"Imagen de la banda "+idBand+" no encontrada.",err);
-                } else {
-                    return new ServerMessages(false,"Imagen de la banda " +idBand + " enviada.",{});
-                }
-            }
-            );
-        } catch (error) {
-            return new ServerMessages(true,"Imagen de la banda "+idBand+" no encontrada.",error);
-        }
-    }
-    //Elimina la imagen de una BANDAS
-    @Get('band-delete-image/:idBand')
-    @UseGuards(AuthGuard())
-    async deleteBandImage(@Param('idBand') idBand : String): Promise<any> {
-        return await this.deleteFile('storage/songs/'+idBand+'.jpg');
-    }
-
-    //////////////////////////////////////Sets/////////////////////////////////////////////////
-    //Crea y guarda la imagen de un SET y su directorio
-    @Post('set-image/')
-    @UseGuards(AuthGuard())
-    @UseInterceptors(FilesInterceptor('files[]', 1, {
-        fileFilter: jpgFileFilter,
-        storage: storageSets
-    }))
-    async setImageFileUpload(@UploadedFiles() images): Promise<any> {
-        return new ServerMessages(false,"Imagen del set " + images[0].originalname + " subida.",{});
-    }
-
-    //URL que proporciona las imagenes un SET
-    @Get('set-image/:idSet')
-    //@UseGuards(AuthGuard())
-    async serveSetImage(@Param('idSet') idSet : String, @Res() res): Promise<any> {
-        try {
-            res.sendFile( idSet+'.jpg' , { root: 'storage/sets/'}, 
-            (err) => {
-                if (err) {
-                    return new ServerMessages(true,"Imagen del set"+idSet+" no encontrada.",err);
-                } else {
-                    return new ServerMessages(false,"Imagen del set " +idSet + " enviada.",{});
-                }
-            }
-            );
-        } catch (error) {
-            return new ServerMessages(true,"Imagen del set"+idSet+" no encontrada.",error);
-        }
-    }
-    //Elimina la imagen un SET
-    @Get('set-delete-image/:idSet')
-    @UseGuards(AuthGuard())
-    async deleteSetImage(@Param('idSet') idSet : String): Promise<any> {
-        return await this.deleteFile('storage/sets/'+idSet+'.jpg');
-    }
-    //////////////////////////////////////CANCIONES/////////////////////////////////////////////////
-    //Crea y guarda la imagen de la cancion y su directorio
-    @Post('song-image/')
-    @UseGuards(AuthGuard())
-    @UseInterceptors(FilesInterceptor('files[]', 1, {
-        fileFilter: jpgFileFilter,
-        storage: storageSongs
-    }))
-    async songImageFileUpload(@UploadedFiles() images): Promise<any> {
-        return new ServerMessages(false,"Imagen " + images[0].originalname + " subida.",{});
-    }
-
-    //URL que proporciona las imagenes de los usuarios 
-    @Get('song-image/:idSong/:nameFile')
-    @UseGuards(AuthGuard())
-    async serveSongImage(@Param('idSong') idSong : String,@Param('nameFile') nameFile : String, @Res() res): Promise<any> {
-        try {
-            res.sendFile( nameFile+'.jpg' , { root: 'storage/songs/'+idSong+'/'}, 
-                (err) => {
-                    if (err) {
-                        return new ServerMessages(true,"Imagen del usuaruo"+idSong+" no encontrada.",err);
-                    } else {
-                        return new ServerMessages(false,"Imagen del usuario " +idSong + " enviada.",{});
-                    }
-                }
-            );
-        } catch (error) {
-            return new ServerMessages(true,"Imagen de la cancion "+idSong+" no encontrada.",error);
-        }
-        
-    }
-    //Elimina alguna de las imagenes de la cancion segun su nombre de archivo
-    @Get('song-delete-image/:idSong/:nameFile')
-    @UseGuards(AuthGuard())
-    async deleteSongImage(@Param('idSong') idSong : String,@Param('nameFile') nameFile : String): Promise<any> {
-        return await this.deleteFile('storage/songs/'+idSong+'/'+nameFile+'.jpg');
-    } 
-
-    //Esta funcion ayuda a varios controladores a borrar los archivos solo debe recibir el path relativo con 
-    //su nombre
-    deleteFile(namePath : string) : Promise<any>{
-        return new Promise((resolve,reject)=>{
-            fs.unlink(namePath , (error) => {
-                if (error) {
-                    resolve( new ServerMessages(true,"Imagen no existe.",{}) );
-                }else{
-                    resolve( new ServerMessages(false,"Imagen eliminada.",{}));
-                };
-            });
-        })
+    async deleteUserImage(@Param('idUser') idUser : string): Promise<any> {
+        return await this.uploadsService.deleteImageUser(idUser );
     }
 }

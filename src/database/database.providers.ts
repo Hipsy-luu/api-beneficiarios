@@ -20,9 +20,9 @@ export const databaseProviders = [
         logging: false,
         host: 'localhost',
         port: 3306,
-        username: 'vesvir_user',
-        password: 'hPjdnv5yJW2naLol',
-        database: 'vesvir_db',
+        username: 'beneficiarios_user',
+        password: '9AYRfGMo7HX2eN1e',
+        database: 'beneficiarios_bd',
       });
 
       /**

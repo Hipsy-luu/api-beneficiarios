@@ -20,50 +20,68 @@ export class User extends Model<User> {
     primaryKey: true,
     autoIncrement: true,
     unique: true,
-    field: 'id_user',
+    field: 'idUser',
   })
   public idUser: number;
 
   @Column({
-    type: DataType.INTEGER({ length: 11 }),
-    allowNull: false,
-    defaultValue: 0,
-  })
-  public role: number;
-
-  @Column({
-    type: DataType.STRING(45),
+    type: DataType.STRING(200),
     allowNull: false,
   })
   name: string;
 
   @Column({
-    type: DataType.STRING(100),
+    type: DataType.STRING(150),
     allowNull: false,
     unique: true,
   })
   email: string;
 
   @Column({
-    type: DataType.STRING(150),
+    type: DataType.STRING(100),
     allowNull: false,
   })
   password: string;
 
   @Column({
-    type: DataType.STRING(100),
+    type: DataType.BOOLEAN,
     allowNull: false,
-    unique: true,
+    defaultValue: false,
+    field: 'canCreateBen',
   })
-  username: string;
+  canCreateBen: boolean;
 
   @Column({
     type: DataType.BOOLEAN,
     allowNull: false,
     defaultValue: false,
-    field: 'have_image',
+    field: 'canSeeExp',
+  })
+  canSeeExp: boolean;
+
+  @Column({
+    type: DataType.INTEGER({ length: 11 }),
+    allowNull: false,
+    defaultValue: 1,
+    field: 'role',
+  })
+  role: number;
+
+  @Column({
+    type: DataType.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+    field: 'haveImage',
   })
   haveImage: boolean;
+
+  @Column({
+    type: DataType.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+    field: 'deleted',
+  })
+  deleted: boolean;
 
   @BeforeCreate
   public static async hashPassword(user: User) {

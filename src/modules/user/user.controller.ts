@@ -18,13 +18,14 @@ export class UserController {
 
   @Get('user-list')
   @UseGuards(AuthGuard())
-  public async getUsers(): Promise<ServerMessages> {
-    return this.userService.getAllUsers();
+  public async getUsers( @Request() req): Promise<ServerMessages> {
+    return this.userService.getAllUsers(req.user.email);
   }
 
-  @Post('register')
-  public async registerUser(@Body() body): Promise<ServerMessages> {
-    return this.userService.registerUser(body);
+  @Post('create-user')
+  @UseGuards(AuthGuard())
+  public async createUser(@Body() newUser): Promise<ServerMessages> {
+    return this.userService.createUser(newUser);
   }
 
   @Post('update-user')
@@ -33,10 +34,16 @@ export class UserController {
     return this.userService.updateUser(body);
   }
 
+  @Get('delete-user/:idUser')
+  @UseGuards(AuthGuard())
+  public async deleteUser(@Param('idUser') idUser : string): Promise<ServerMessages> {
+    return this.userService.deleteUser(idUser);
+  }
+
   @Post('change-user-pass')
   @UseGuards(AuthGuard())
-  public async updateUserPassword(@Body() body): Promise<ServerMessages> {
-    return this.userService.updateUserPassword(body);
+  public async updateUserPassword(@Request() req ,@Body() body ): Promise<ServerMessages> {
+    return this.userService.updateUserPassword(req.user.idUser , body);
   }
 
   /* @Post('testuserband')

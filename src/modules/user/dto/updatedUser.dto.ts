@@ -1,8 +1,7 @@
 export class UpdatedUserDto {
   idUser: number;
-  name: String;
-  username: String;
-  email: String;
-  haveImage: boolean;
-  role:number;
+  name: string;
+  email: string;
+  permissionCreate : boolean;
+  permissionSeeExp : boolean;
 }
