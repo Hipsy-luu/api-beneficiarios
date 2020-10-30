@@ -164,7 +164,7 @@ export class UserService {
       userToUpdate.canCreateBen = updatedUser.canCreateBen;
       userToUpdate.canSeeExp = updatedUser.canSeeExp;
   
-      userToUpdate.save();
+      await userToUpdate.save();
       return new ServerMessages(false, 'Usuario actualizado con éxito', userToUpdate);
     } catch (error) {
       return new ServerMessages(true, 'A ocurrido un error', error);
@@ -218,7 +218,7 @@ export class UserService {
 
     try {
       userToUpdate.deleted =  true;
-      userToUpdate.save();
+      await userToUpdate.save();
       return new ServerMessages(false, 'Usuario borrado con éxito', userToUpdate);
     } catch (error) {
       return new ServerMessages(true, 'A ocurrido un error', error);
@@ -273,10 +273,10 @@ export class UserService {
         })
         .catch((error) => {
           console.log(error);
-          reject ( new ServerMessages(true, "Error enviando correo", error) );
+          resolve ( new ServerMessages(true, "Error enviando correo", error) );
         });
       } catch (error) {
-        reject( new ServerMessages(true, "Error 2 enviando correo", error) ) ;
+        resolve( new ServerMessages(true, "Error 2 enviando correo", error) ) ;
       }
     })
   }

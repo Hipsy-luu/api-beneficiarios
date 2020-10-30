@@ -7,6 +7,10 @@ import { Sequelize } from 'sequelize-typescript';
  */
 //import { SEQUELIZE } from '../utils/constants';
 import { User } from '../models/users.entity';
+import { Beneficiary } from '../models/beneficiary.entity';
+import { EconomicStudyForm } from '../models/economicStudyForm.entity';
+import { FamilyBeneficiarys } from '../models/familyBeneficiarys.entity';
+import { EvidenceImages } from '../models/evidenceImages.entity';
 
 export const databaseProviders = [
   {
@@ -33,6 +37,10 @@ export const databaseProviders = [
        */
       sequelize.addModels([
         User,
+        Beneficiary,
+        EconomicStudyForm,
+        FamilyBeneficiarys,
+        EvidenceImages
       ]);
 
       await sequelize.sync();

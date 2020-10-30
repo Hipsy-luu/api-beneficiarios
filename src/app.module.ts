@@ -8,6 +8,8 @@ import { LiveDataModule } from './modules/live-data/live-data.module';
 import { UploadsModule } from './modules/uploads/uploads.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { BeneficiaryModule } from './modules/beneficiary/beneficiary.module';
+import { EconomicStudyFormModule } from './modules/economic-study-form/economic-study-form.module';
 
 @Module({
   imports: [
@@ -43,7 +45,9 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     UserModule,
     AuthModule,
     LiveDataModule,
-    UploadsModule
+    UploadsModule,
+    BeneficiaryModule,
+    EconomicStudyFormModule
   ],
   controllers: [AppController],
   providers: [AppService],

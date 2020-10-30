@@ -9,11 +9,30 @@ import {
   BeforeCreate,
   HasMany,
 } from 'sequelize-typescript';
+import { Beneficiary } from './beneficiary.entity';
 
 @Table({
   tableName: 'users',
 })
 export class User extends Model<User> {
+    //Ejemplo
+  /* @Column({
+    type: DataType.BOOLEAN, DataType.INTEGER({ length: 11 }), DataType.STRING(45), DataType.DATE,
+    allowNull: false,
+    primaryKey: true,
+    autoIncrement: true,
+    unique: true,
+    defaultValue: false,
+    validate: { // DOC : https://sequelize.org/master/manual/validations-and-constraints.html
+      notEmpty: {
+        msg: 'Please enter your name'
+      }
+    },
+    field: 'have_image',
+    
+  })
+  haveImage: string; */
+
   @Column({
     type: DataType.INTEGER({ length: 11 }),
     allowNull: false,
@@ -23,7 +42,7 @@ export class User extends Model<User> {
     field: 'idUser',
   })
   public idUser: number;
-
+ 
   @Column({
     type: DataType.STRING(200),
     allowNull: false,
@@ -82,6 +101,9 @@ export class User extends Model<User> {
     field: 'deleted',
   })
   deleted: boolean;
+
+  @HasMany(() => Beneficiary, 'idUserRegister')
+  Beneficiarys: Beneficiary[];
 
   @BeforeCreate
   public static async hashPassword(user: User) {

@@ -8,9 +8,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { UploadsService } from './uploads.service';
 
 var usersPath = './storage/users/';
-var bandsPath = './storage/bands/';
-var setsPath = './storage/sets/';
-var songsPath = './storage/songs/';
+var beneficiarysPath = './storage/beneficiary/';
+var formsPath = './storage/forms/';
 
 const jpgFileFilter = (req, file, callback) => {
     let ext = path.extname(file.originalname);
@@ -39,14 +38,31 @@ var storageUsers = multer.diskStorage({
     }
 });
 
-//Reasigna los valores para guardar la imagen de las canciones segun el nombre del archivo(carpeta y si no existe la crea)
-var storageSongs = multer.diskStorage({
+//Reasigna los valores para guardar la imagen (carpeta y si no existe la crea)
+var storageBeneficiary = multer.diskStorage({
     destination: function (req, file, cb) {
-        var dirSong = file.originalname.toString().slice(0,file.originalname.toString().indexOf("-"));
-        var dir = songsPath+dirSong+'/';
+        //console.log({stringActual : dirCompany , stringdirectorio : dir});
+        if (!fs.existsSync('./storage/') ){
+            fs.mkdirSync('./storage/');
+        }
+        if (!fs.existsSync(beneficiarysPath) ){
+            fs.mkdirSync(beneficiarysPath);
+        }
+        cb(null, beneficiarysPath)
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname );
+    }
+});
+
+//agarra la carpeta y el nombre del archivo(carpeta y si no existe la crea)
+var storageForms = multer.diskStorage({
+    destination: function (req, file, cb) {
+        var dirIdForm = file.originalname.toString().slice(0,file.originalname.toString().indexOf("-"));
+        var dir = formsPath+dirIdForm+'/';
         //console.log({stringActual : dirSong , stringdirectorio : dir});
-        if (!fs.existsSync(songsPath)){
-            fs.mkdirSync(songsPath);
+        if (!fs.existsSync(formsPath)){
+            fs.mkdirSync(formsPath);
         }
         if (!fs.existsSync(dir)){
             fs.mkdirSync(dir);
@@ -102,4 +118,82 @@ export class UploadsController {
     async deleteUserImage(@Param('idUser') idUser : string): Promise<any> {
         return await this.uploadsService.deleteImageUser(idUser );
     }
+
+    //Beneficiario
+    //////////////////////////////////////BENEFICIARIOS/////////////////////////////////////////////////
+    //Crea y guarda la imagen del beneficiario y su directorio
+    @Post('beneficiary-image/')
+    @UseGuards(AuthGuard())
+    @UseInterceptors(FilesInterceptor('files[]', 1, {
+        fileFilter: jpgFileFilter,
+        storage: storageBeneficiary
+    }))
+    async beneficiaryImageFileUpload(@UploadedFiles() images): Promise<any> {
+        return await this.uploadsService.setBeneficiaryHaveImage(images[0].originalname);
+    }
+
+    //URL que proporciona las imagenes de los beneficiarios 
+    @Get('beneficiary-image/:idBeneficiary')
+    /* @UseGuards(AuthGuard()) */
+    async serveBeneficiaryImage(@Param('idBeneficiary') idBeneficiary : String, @Res() res): Promise<any> {
+        try {
+            res.sendFile( idBeneficiary+'.jpg' , { root: 'storage/beneficiary/'}, 
+            (err) => {
+                if (err) {
+                    return new ServerMessages(true,"Imagen del beneficiario"+idBeneficiary+" no encontrada.",err);
+                } else {
+                    return new ServerMessages(false,"Imagen del beneficiario " +idBeneficiary + " enviada.",{});
+                }
+            }
+            );
+        } catch (error) {
+            return new ServerMessages(true,"Imagen del beneficiario "+idBeneficiary+" no encontrada.",error);
+        }
+    }
+    //Elimina la imagen de un beneficiario
+    @Get('beneficiary-delete-image/:idBeneficiary')
+    @UseGuards(AuthGuard())
+    async deleteImageBeneficiary(@Param('idBeneficiary') idBeneficiary : string): Promise<any> {
+        return await this.uploadsService.deleteImageBeneficiary( idBeneficiary );
+    }
+
+    //////////////////////////////////////BENEFICIARIOS/////////////////////////////////////////////////
+    //Crea y guarda la imagen del beneficiario y su directorio
+    @Post('form-image/')
+    @UseGuards(AuthGuard())
+    @UseInterceptors(FilesInterceptor('files[]', 1, {
+        fileFilter: jpgFileFilter,
+        storage: storageForms
+    }))
+    async evidenceImagesImageFileUpload(@UploadedFiles() images): Promise<any> {
+        return new ServerMessages(false , "Se subió correctamente la imagen del formulario "+images[0].originalname,{});
+    }
+
+    //URL que proporciona las imágenes de las evidencias de los formularios 
+    @Get('form-image/:idEconomicStudyForm/:idEvidenceImages')
+    /* @UseGuards(AuthGuard()) */
+    async serveEvidenceImages(
+        @Param('idEconomicStudyForm') idEconomicStudyForm : String,
+        @Param('idEvidenceImages') idEvidenceImages : String, 
+        @Res() res): Promise<any> {
+        try {
+            res.sendFile( idEvidenceImages+'.jpg' , { root: 'storage/forms/'+ idEconomicStudyForm + '/'}, 
+            (err) => {
+                if (err) {
+                    return new ServerMessages(true,"Imagen del formulario "+idEconomicStudyForm+" no encontrada."+idEvidenceImages,err);
+                } else {
+                    return new ServerMessages(false,"Imagen del formulario " +idEconomicStudyForm + " enviada."+idEvidenceImages,{});
+                }
+            }
+            );
+        } catch (error) {
+            return new ServerMessages(true,"Imagen del formulario "+idEconomicStudyForm+" no encontrada."+idEvidenceImages,error);
+        }
+    }
+    /* //Elimina la imagen de un beneficiario
+    @Get('beneficiary-delete-image/:idBeneficiary')
+    @UseGuards(AuthGuard())
+    async deleteImageBeneficiary(@Param('idBeneficiary') idBeneficiary : string): Promise<any> {
+        return await this.uploadsService.deleteImageBeneficiary(idBeneficiary );
+    } */
 }
