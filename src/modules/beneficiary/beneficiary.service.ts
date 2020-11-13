@@ -8,6 +8,7 @@ import { EconomicStudyForm } from '../../models/economicStudyForm.entity';
 import { FamilyBeneficiarys } from '../../models/familyBeneficiarys.entity';
 import { EvidenceImages } from '../../models/evidenceImages.entity';
 import * as fs from 'fs';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class BeneficiaryService {
@@ -304,9 +305,9 @@ export class BeneficiaryService {
                 }
 
                 let path = 'storage/forms/' + beneficiary.economicStudyForms[index].idEconomicStudyForm + '/';
-                    if (fs.existsSync(path)) {
-                        fs.rmdirSync(path);
-                    }
+                if (fs.existsSync(path)) {
+                    fs.rmdirSync(path);
+                }
 
                 let resultDelete = await beneficiary.economicStudyForms[index].destroy();
                 resultDeletes.push(resultDelete);
@@ -358,6 +359,68 @@ export class BeneficiaryService {
             return new ServerMessages(false, 'Lista de beneficiarios obtenida', beneficiarysList);
         } catch (error) {
             return new ServerMessages(true, 'Error obteniendo lista de beneficiarios', {});
+        }
+    }
+
+    async getBeneficiaryListByName(searchName): Promise<ServerMessages> {
+        try {
+            var beneficiarysList: Beneficiary[] = await this.beneficiaryRepository.findAll<Beneficiary>({
+                attributes: ['idBeneficiary', 'name', 'lastName', 'motherLastName', 'haveImage'],
+                where: {
+                    [Op.or]: [
+                        {
+                            name:
+                            {
+                                [Op.substring]: searchName.nameForSearch,
+                            }
+                        },
+                        {
+                            lastName:
+                            {
+                                [Op.substring]: searchName.nameForSearch,
+                            }
+                        },
+                        {
+                            motherLastName:
+                            {
+                                [Op.substring]: searchName.nameForSearch,
+                            }
+                        }
+                    ],
+
+                },
+                limit: 2,
+                include : [{
+                    model: EconomicStudyForm,
+                    as: "economicStudyForms",
+                    include : [{
+                        model: FamilyBeneficiarys,
+                        as: "family"
+                    }]
+                }]
+            }).map((beneficiary: Beneficiary) => {
+                let family : any[] = [];
+
+                for (let index = 0; index < beneficiary.economicStudyForms.length; index++) {
+                    for (let indexx = 0; indexx < beneficiary.economicStudyForms[index].family.length; indexx++) {
+                        const element = beneficiary.economicStudyForms[index].family[indexx];
+                        family.push(element)
+                    }
+                }
+                return Object.assign(
+                  {
+                    idBeneficiary : beneficiary.idBeneficiary, 
+                    name : beneficiary.name, 
+                    lastName : beneficiary.lastName, 
+                    motherLastName : beneficiary.motherLastName, 
+                    haveImage : beneficiary.haveImage,
+
+                    family : family
+                  })
+              });
+            return new ServerMessages(false, 'Lista de coincidencias obtenida', beneficiarysList);
+        } catch (error) {
+            return new ServerMessages(true, 'Error obteniendo lista de coincidencias', {});
         }
     }
 }

@@ -49,4 +49,9 @@ export class BeneficiaryController {
         return this.beneficiaryService.getBeneficiarysList();
     }
 
+    @Post('beneficiary-name-list')
+    @UseGuards(AuthGuard())
+    public async getBeneficiaryListByName( @Body() body ): Promise<ServerMessages> {
+        return this.beneficiaryService.getBeneficiaryListByName(body);
+    }
 }

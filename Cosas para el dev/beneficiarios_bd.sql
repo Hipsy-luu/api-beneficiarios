@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost
--- Tiempo de generación: 30-10-2020 a las 01:26:13
+-- Tiempo de generación: 13-11-2020 a las 07:29:03
 -- Versión del servidor: 10.4.11-MariaDB
 -- Versión de PHP: 7.2.27
 
@@ -59,7 +59,8 @@ INSERT INTO `beneficiarys` (`idBeneficiary`, `name`, `lastName`, `motherLastName
 (5, 'luismiguel', 'ortiz', 'alvarez', 1, '1994-01-17 06:00:00', '6394740742', '', 2, 'Estudiante', 3, 'OIAL940118HCHRLS05', 'nigungo', 1, '2020-10-28 02:00:39', 0, 4),
 (6, 'luismiguel', 'ortiz', 'alvarez', 1, '1994-01-17 06:00:00', '6394740742', '', 2, 'Estudiante', 3, 'OIAL940118HCHRLS05', 'nigungo', 1, '2020-10-28 02:03:45', 0, 4),
 (8, 'luismiguel', 'ortiz', 'alvarez', 1, '1994-01-17 06:00:00', '6394740742', '', 2, 'Estudiante', 3, 'OIAL940118HCHRLS05', 'nigungo', 1, '2020-10-28 02:05:44', 0, 4),
-(12, 'floedsds', 'ortiz', 'alvarez', 1, '1994-01-17 06:00:00', '6394740742', '', 2, 'Estudiante', 3, 'OIAL940118HCHRLS05', 'nigungo', 1, '2020-10-29 23:34:28', 0, 4);
+(12, 'floedsds', 'ortiz', 'alvarez', 1, '1994-01-17 06:00:00', '6394740742', '', 2, 'Estudiante', 3, 'OIAL940118HCHRLS05', 'nigungo', 1, '2020-10-29 23:34:28', 0, 4),
+(13, 'Luuismiguel', 'Alvarez', 'Ortiz', 1, '1994-01-18 06:00:00', '6666666666', '', -1, 'Estudiante', 3, 'OIAL940118HCHRLS05', '', 1, '2020-10-30 02:27:19', 1, 4);
 
 -- --------------------------------------------------------
 
@@ -122,6 +123,13 @@ CREATE TABLE `economicStudyForm` (
   `feeding` double DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+--
+-- Volcado de datos para la tabla `economicStudyForm`
+--
+
+INSERT INTO `economicStudyForm` (`idEconomicStudyForm`, `idBeneficiary`, `medicalService`, `haveDisability`, `causeDisability`, `disabilityTime`, `haveChronicDisease`, `chronicDiseaseType`, `other`, `colony`, `street`, `number`, `postalCode`, `references`, `typeHousing`, `numberRooms`, `numberBathrooms`, `numberBedrooms`, `housingConditions`, `floor`, `ceiling`, `termsFurniture`, `timeAtHome`, `haveStove`, `haveCar`, `haveFridge`, `haveMicrowave`, `haveWashingMachine`, `haveComputer`, `haveTelevision`, `haveAirConditioning`, `houseDescription`, `diagnostic`, `creationDate`, `monthlyIncome`, `monthlyFamilyIncome`, `phone`, `internet`, `gasoline`, `rent`, `monthlyPasses`, `light`, `predial`, `education`, `transport`, `water`, `gas`, `medicalExpenses`, `cableTV`, `dress`, `others`, `feeding`) VALUES
+(24, 13, -1, 0, '', '', 0, -1, '', '', '', '', '', '', -1, 0, 0, 0, -1, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, '', '', '2020-10-30 02:32:09', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
 -- --------------------------------------------------------
 
 --
@@ -133,6 +141,15 @@ CREATE TABLE `evidenceImages` (
   `idEconomicStudyForm` int(11) NOT NULL,
   `type` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `evidenceImages`
+--
+
+INSERT INTO `evidenceImages` (`idEvidenceImages`, `idEconomicStudyForm`, `type`) VALUES
+(22, 24, 2),
+(23, 24, 0),
+(24, 24, 3);
 
 -- --------------------------------------------------------
 
@@ -154,6 +171,47 @@ CREATE TABLE `familyBeneficiarys` (
   `relationship` int(11) DEFAULT NULL,
   `input` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `familyBeneficiarys`
+--
+
+INSERT INTO `familyBeneficiarys` (`idFamilyBeneficiarys`, `idEconomicStudyForm`, `name`, `lastName`, `motherLastName`, `gender`, `birthDay`, `scholarship`, `occupation`, `civilState`, `relationship`, `input`) VALUES
+(3, 24, 'luismig', '', '', 0, '2020-10-29 00:00:00', -1, '', -1, -1, -1);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `registry`
+--
+
+CREATE TABLE `registry` (
+  `idRegistry` int(11) NOT NULL,
+  `idBeneficiary` int(11) NOT NULL,
+  `year` int(11) NOT NULL,
+  `month` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `idFamilyBeneficiarys` int(11) NOT NULL,
+  `pickUpPantry` tinyint(1) NOT NULL,
+  `justification` varchar(1500) COLLATE utf8_unicode_ci NOT NULL,
+  `idUserRegister` int(11) NOT NULL,
+  `createdAt` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `registry`
+--
+
+INSERT INTO `registry` (`idRegistry`, `idBeneficiary`, `year`, `month`, `idFamilyBeneficiarys`, `pickUpPantry`, `justification`, `idUserRegister`, `createdAt`) VALUES
+(1, 13, 2020, 'enero', -1, 0, '', 4, '2020-11-12 08:18:01'),
+(2, 13, 2020, 'febrero', -1, 0, '', 4, '2020-11-12 08:18:01'),
+(3, 13, 2020, 'marzo', -1, 0, '', 4, '2020-11-12 14:13:26'),
+(4, 12, 2020, 'enero', -1, 1, '', 4, '2020-11-12 14:14:34'),
+(5, 3, 2020, 'enero', -1, 0, '', 4, '2020-11-12 14:17:27'),
+(6, 13, 2020, 'junio', 3, 1, '', 4, '2020-11-12 14:28:06'),
+(7, 13, 2020, 'diciembre', -1, 0, '', 4, '2020-11-12 15:09:11'),
+(8, 13, 2020, 'abril', -1, 0, 'dsdsdsdd', 4, '2020-11-12 15:09:11'),
+(9, 12, 2020, 'agosto', -1, 0, 'dsdsdd', 4, '2020-11-12 15:09:11'),
+(10, 12, 2020, 'octubre', -1, 1, '', 4, '2020-11-12 15:09:11');
 
 -- --------------------------------------------------------
 
@@ -226,6 +284,15 @@ ALTER TABLE `familyBeneficiarys`
   ADD KEY `familyBeneficiarys_FK` (`idEconomicStudyForm`);
 
 --
+-- Indices de la tabla `registry`
+--
+ALTER TABLE `registry`
+  ADD PRIMARY KEY (`idRegistry`),
+  ADD UNIQUE KEY `registry_UN` (`idRegistry`),
+  ADD KEY `registry_FK` (`idBeneficiary`),
+  ADD KEY `registry_FK_1` (`idUserRegister`);
+
+--
 -- Indices de la tabla `users`
 --
 ALTER TABLE `users`
@@ -240,25 +307,31 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT de la tabla `beneficiarys`
 --
 ALTER TABLE `beneficiarys`
-  MODIFY `idBeneficiary` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `idBeneficiary` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de la tabla `economicStudyForm`
 --
 ALTER TABLE `economicStudyForm`
-  MODIFY `idEconomicStudyForm` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `idEconomicStudyForm` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT de la tabla `evidenceImages`
 --
 ALTER TABLE `evidenceImages`
-  MODIFY `idEvidenceImages` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `idEvidenceImages` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT de la tabla `familyBeneficiarys`
 --
 ALTER TABLE `familyBeneficiarys`
-  MODIFY `idFamilyBeneficiarys` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idFamilyBeneficiarys` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `registry`
+--
+ALTER TABLE `registry`
+  MODIFY `idRegistry` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `users`
@@ -293,6 +366,13 @@ ALTER TABLE `evidenceImages`
 --
 ALTER TABLE `familyBeneficiarys`
   ADD CONSTRAINT `familyBeneficiarys_FK` FOREIGN KEY (`idEconomicStudyForm`) REFERENCES `economicStudyForm` (`idEconomicStudyForm`);
+
+--
+-- Filtros para la tabla `registry`
+--
+ALTER TABLE `registry`
+  ADD CONSTRAINT `registry_FK` FOREIGN KEY (`idBeneficiary`) REFERENCES `beneficiarys` (`idBeneficiary`),
+  ADD CONSTRAINT `registry_FK_1` FOREIGN KEY (`idUserRegister`) REFERENCES `users` (`idUser`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

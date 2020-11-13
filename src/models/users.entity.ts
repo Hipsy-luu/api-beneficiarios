@@ -85,7 +85,7 @@ export class User extends Model<User> {
     field: 'role',
   })
   role: number;
-
+  
   @Column({
     type: DataType.BOOLEAN,
     allowNull: false,

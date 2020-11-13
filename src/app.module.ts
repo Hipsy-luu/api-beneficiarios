@@ -10,6 +10,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { BeneficiaryModule } from './modules/beneficiary/beneficiary.module';
 import { EconomicStudyFormModule } from './modules/economic-study-form/economic-study-form.module';
+import { RegistryModule } from './modules/registry/registry.module';
 
 @Module({
   imports: [
@@ -47,7 +48,8 @@ import { EconomicStudyFormModule } from './modules/economic-study-form/economic-
     LiveDataModule,
     UploadsModule,
     BeneficiaryModule,
-    EconomicStudyFormModule
+    EconomicStudyFormModule,
+    RegistryModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -11,6 +11,7 @@ import { Beneficiary } from '../models/beneficiary.entity';
 import { EconomicStudyForm } from '../models/economicStudyForm.entity';
 import { FamilyBeneficiarys } from '../models/familyBeneficiarys.entity';
 import { EvidenceImages } from '../models/evidenceImages.entity';
+import { Registry } from '../models/registry.entity';
 
 export const databaseProviders = [
   {
@@ -40,7 +41,8 @@ export const databaseProviders = [
         Beneficiary,
         EconomicStudyForm,
         FamilyBeneficiarys,
-        EvidenceImages
+        EvidenceImages,
+        Registry
       ]);
 
       await sequelize.sync();
